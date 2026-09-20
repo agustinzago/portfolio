@@ -1,0 +1,121 @@
+{
+  "name": "Agustín Zago",
+  "title": "Software Engineer — Backend & Platform",
+  "location": "Córdoba, Argentina",
+  "availability": "Open to remote and relocation · Italian citizenship (EU work authorisation)",
+  "summary": "Full-stack engineer focused on backend and platform work: third-party integrations, distributed data pipelines and AI-powered product features. I build in Node.js and TypeScript on AWS, with React on the front end, and I care about systems that stay correct under concurrency, retries and flaky upstream APIs.",
+  "contact": {
+    "email": "zagoagus@gmail.com",
+    "website": "https://agustinzago.com",
+    "linkedin": "https://linkedin.com/in/agustinzago",
+    "github": "https://github.com/agustinzago"
+  },
+  "experience": [
+    {
+      "id": "brainner",
+      "company": "Brainner",
+      "role": "Lead Platform Engineer",
+      "start": "2026-03",
+      "end": null,
+      "location": "Remote",
+      "tagline": "AI-powered candidate screening platform that plugs directly into recruiters' ATS.",
+      "highlights": [
+        "Built four production ATS integrations end to end — BambooHR, Teamtailor, Pinpoint and Greenhouse Harvest v3 — covering OAuth connection flows, job and candidate sync, resume ingestion, and bidirectional write-back of stage moves, rejections, notes and AI scores.",
+        "Migrated the Greenhouse connector from Harvest v1 to the v3 Partner OAuth API using a dual-vendor model, so both versions ran side by side and existing customers migrated with no downtime and no re-onboarding.",
+        "Designed a cursor-paginated sync layer on AWS Lambda that streams ATS records into OpenSearch, with per-vendor rate limiting, exponential backoff on 429s and idempotent retries across resumable pages.",
+        "Built Candidate Pools, a conversational search experience combining hybrid retrieval over OpenSearch (keyword + vector embeddings), Cohere reranking served through Amazon Bedrock, and per-criterion AI evaluation of every shortlisted candidate with streaming UI updates.",
+        "Shipped Candidate Rediscovery, re-evaluating a company's entire historical ATS database against any new opening to turn dormant applicant data into a sourcing channel; rolled out progressively behind team-scoped feature flags.",
+        "Hardened the distributed import and evaluation pipeline on Redis-backed workers with claim-and-recover semantics for stale runs, enqueue deduplication and cancellation handling, eliminating stuck and double-completed jobs.",
+        "Implemented automated OAuth token rotation on AWS Secrets Manager for vendors issuing rotating refresh tokens, removing a recurring class of silent integration failures."
+      ]
+    },
+    {
+      "id": "winclap",
+      "company": "Winclap",
+      "role": "Software Engineer",
+      "start": "2025-01",
+      "end": "2026-03",
+      "location": "Córdoba, Argentina (Hybrid)",
+      "tagline": "Serverless media intelligence platform for cross-platform advertising campaigns.",
+      "highlights": [
+        "Built and scaled a serverless media platform on SST, tRPC, React and AWS (Lambda, DynamoDB, OpenSearch, S3) supporting seven advertising platforms — Google Ads, Facebook, TikTok, LinkedIn, Twitter, Moloco and Liftoff.",
+        "Architected type-safe, high-throughput APIs capable of serving 10,000+ advertising assets per query for cross-platform analysis.",
+        "Developed AI-powered asset quality intelligence producing real-time health scores, compliance checks and automated correction suggestions across campaigns.",
+        "Designed predictive alerting that combined quality degradation, budget anomalies and change velocity into proactive account-management signals, including >50% budget variance alerts.",
+        "Implemented localisation across Spanish, English and Portuguese, including translation key management and regional variants."
+      ]
+    },
+    {
+      "id": "itlg-fullstack",
+      "company": "ITLG",
+      "role": "Fullstack Developer",
+      "start": "2024-01",
+      "end": "2025-01",
+      "location": "Córdoba, Argentina (Hybrid)",
+      "tagline": null,
+      "highlights": [
+        "Led a full-stack feature that improved application performance by 30%, using React on the front end and Node.js for backend processing.",
+        "Redesigned a core module's UI and backend architecture, raising user satisfaction and engagement by 25% through better data-access patterns and database management.",
+        "Introduced TypeScript across React and Node.js codebases, reducing runtime errors and improving maintainability for the whole team.",
+        "Implemented RESTful APIs and third-party integrations with secure data handling between client and server."
+      ]
+    },
+    {
+      "id": "itlg-backend",
+      "company": "ITLG",
+      "role": "Backend Developer",
+      "start": "2023-05",
+      "end": "2024-01",
+      "location": "Córdoba, Argentina (Hybrid)",
+      "tagline": null,
+      "highlights": [
+        "Built an automated scheduling system with Control-M that cut manual operational workload by 40%.",
+        "Optimised database performance by rewriting SQL queries, reducing execution time by 20%.",
+        "Streamlined data integration pipelines with DataStage, improving data accuracy and consistency across systems."
+      ]
+    },
+    {
+      "id": "tutor",
+      "company": "Freelance",
+      "role": "Python Tutor",
+      "start": "2022-01",
+      "end": "2022-12",
+      "location": "Córdoba, Argentina (Remote)",
+      "tagline": null,
+      "highlights": [
+        "Mentored 10+ San Andrés College students through personalised Python tutoring, with a 100% success rate on their college projects.",
+        "Created a Python curriculum and coding workshops tailored to individual learning needs."
+      ]
+    }
+  ],
+  "skills": {
+    "languages": ["TypeScript", "JavaScript", "Python", "SQL"],
+    "backend": ["Node.js", "NestJS", "Strapi", "tRPC", "REST APIs", "OAuth 2.0", "PostgreSQL", "Redis"],
+    "frontend": ["React", "Next.js", "Tailwind CSS"],
+    "cloud": ["AWS (Lambda, S3, DynamoDB, Secrets Manager, EventBridge, Bedrock)", "SST", "OpenSearch", "Docker"],
+    "ai": ["RAG and hybrid search", "vector embeddings", "reranking", "LLM tooling and agent workflows"],
+    "practices": ["Git", "CI/CD", "Scrum", "feature flags", "technical documentation"]
+  },
+  "education": [
+    {
+      "institution": "Universidad Tecnológica Nacional (UTN FRC)",
+      "degree": "Software Engineering",
+      "start": "2019-02",
+      "end": null,
+      "note": "36 of 40 courses completed towards the degree."
+    },
+    {
+      "institution": "British School",
+      "degree": "English — Advanced (C1)",
+      "start": "2019-02",
+      "end": "2023-12",
+      "note": "Cambridge CAE Grade B; FCE Grade B; PET pass with merit."
+    }
+  ],
+  "languages": [
+    { "name": "Spanish", "level": "native" },
+    { "name": "English", "level": "advanced, C1" },
+    { "name": "Portuguese", "level": "conversational" }
+  ],
+  "projects": []
+}
