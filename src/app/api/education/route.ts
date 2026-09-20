@@ -1,5 +1,5 @@
-import { cv } from "@/lib/cv";
+import { educationView } from "@/lib/cv";
 
 export function GET() {
-  return Response.json({ education: cv.education, languages: cv.languages });
+  return Response.json(educationView());
 }

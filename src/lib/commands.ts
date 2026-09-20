@@ -1,10 +1,10 @@
-import { cv, formatPeriod, skillLines } from "./cv";
+import { cv, formatPeriod, projects, REPO_URL, RESUME_PDF, skillLines } from "./cv";
 
 export type CommandResult =
   | { type: "text"; lines: string[] }
   | { type: "clear" }
   | { type: "navigate"; href: string }
-  | { type: "open"; href: string }
+  | { type: "download"; href: string }
   | { type: "ask"; question: string };
 
 const text = (...lines: string[]): CommandResult => ({ type: "text", lines });
@@ -15,7 +15,7 @@ const commands: Record<string, Command> = {
   help: { desc: "list commands", run: () => text(...helpLines()) },
   about: {
     desc: "who I am",
-    run: () => text(cv.name, cv.title, `${cv.location} · ${cv.availability}`, "", cv.summary),
+    run: () => text(cv.name, cv.title, `${cv.location} · ${cv.availability}`, "", cv.summary, "", `source: ${REPO_URL}`),
   },
   experience: {
     desc: "roles, or `experience <company>` for one",
@@ -41,18 +41,18 @@ const commands: Record<string, Command> = {
   },
   contact: {
     desc: "how to reach me",
-    run: () => text(`email     ${cv.contact.email}`, `linkedin  ${cv.contact.linkedin}`, `github    ${cv.contact.github}`, `source    ${cv.contact.github}/portfolio`),
+    run: () => text(`email     ${cv.contact.email}`, `linkedin  ${cv.contact.linkedin}`, `github    ${cv.contact.github}`, `location  ${cv.location}`, `          ${cv.availability}`),
   },
   projects: {
     desc: "side projects",
-    hidden: cv.projects.length === 0,
-    run: () => text(...cv.projects.map((p: { name: string; description: string }) => `${p.name}: ${p.description}`)),
+    hidden: projects.length === 0,
+    run: () => text(...projects.map((p) => `${p.name}: ${p.description}`)),
   },
   ask: {
     desc: "ask me anything about my work (AI, answers as me)",
     run: (arg) => (arg ? { type: "ask", question: arg } : text("usage: ask <question>")),
   },
-  resume: { desc: "download the PDF", run: () => ({ type: "open", href: "/AgustinZago_CV.pdf" }) },
+  resume: { desc: "download the PDF", run: () => ({ type: "download", href: RESUME_PDF }) },
   page: { desc: "view as a page instead", run: () => ({ type: "navigate", href: "/cv" }) },
   clear: { desc: "clear the screen", run: () => ({ type: "clear" }) },
 
@@ -62,13 +62,20 @@ const commands: Record<string, Command> = {
   vim: { desc: "", hidden: true, run: () => text("you're in vim now. nobody knows how to exit. try `help` instead.") },
   exit: { desc: "", hidden: true, run: () => text("there is no exit, only `page`.") },
   ls: { desc: "", hidden: true, run: () => text(...publicNames()) },
-  cat: { desc: "", hidden: true, run: (arg) => (arg && commands[arg] ? commands[arg].run("") : text("cat: try `cat skills` or `cat about`")) },
+  cat: {
+    desc: "",
+    hidden: true,
+    run: (arg) => {
+      const r = arg && commands[arg] && !commands[arg].hidden ? commands[arg].run("") : null;
+      return r?.type === "text" ? r : text("cat: try `cat skills` or `cat about`");
+    },
+  },
   whoami: { desc: "", hidden: true, run: () => text("agustin") },
 };
 
 const companies = () => [...new Set(cv.experience.map((e) => e.company.toLowerCase()))];
 const publicNames = () => Object.entries(commands).filter(([, c]) => !c.hidden).map(([n]) => n);
-const helpLines = () => publicNames().map((n) => `${n.padEnd(12)} ${commands[n].desc}`);
+export const helpLines = () => publicNames().map((n) => `${n.padEnd(12)} ${commands[n].desc}`);
 
 export function execute(line: string): CommandResult {
   const [name = "", ...rest] = line.trim().split(/\s+/);

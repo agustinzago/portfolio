@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { cv, formatPeriod, SKILL_LABELS, type Skills } from "@/lib/cv";
+import { cv, educationView, experienceView, formatPeriod, languageLine, REPO_URL, RESUME_PDF, SKILL_LABELS, type Skills } from "@/lib/cv";
 import EndpointCard from "@/components/EndpointCard";
 import AskCard from "@/components/AskCard";
 
 export const metadata = { title: `${cv.name} — CV` };
 
 export default function CvPage() {
-  const experience = cv.experience.map((e) => ({ ...e, period: formatPeriod(e.start, e.end) }));
-  const education = { education: cv.education, languages: cv.languages };
+  const experience = experienceView();
+  const education = educationView();
 
   return (
     <main className="mx-auto w-full min-w-0 max-w-3xl px-4 py-8 sm:py-12 space-y-6">
@@ -19,7 +19,7 @@ export default function CvPage() {
           <a className="text-accent hover:underline" href={`mailto:${cv.contact.email}`}>email</a>
           <a className="text-accent hover:underline" href={cv.contact.linkedin} target="_blank" rel="noreferrer">linkedin</a>
           <a className="text-accent hover:underline" href={cv.contact.github} target="_blank" rel="noreferrer">github</a>
-          <a className="text-accent hover:underline" href="/AgustinZago_CV.pdf">pdf</a>
+          <a className="text-accent hover:underline" href={RESUME_PDF} download>pdf</a>
           <Link className="text-prompt hover:underline max-sm:hidden" href="/">open terminal →</Link>
         </p>
       </header>
@@ -69,7 +69,7 @@ export default function CvPage() {
               <div className="text-xs text-dim">{formatPeriod(e.start, e.end)} · {e.note}</div>
             </li>
           ))}
-          <li className="text-dim">{cv.languages.map((l) => `${l.name} (${l.level})`).join(" · ")}</li>
+          <li className="text-dim">{languageLine()}</li>
         </ul>
       </EndpointCard>
 
@@ -78,7 +78,7 @@ export default function CvPage() {
       </EndpointCard>
 
       <footer className="pt-4 text-xs text-dim">
-        source: <a className="hover:text-foreground underline" href={`${cv.contact.github}/portfolio`} target="_blank" rel="noreferrer">github.com/agustinzago/portfolio</a>
+        source: <a className="hover:text-foreground underline" href={REPO_URL} target="_blank" rel="noreferrer">{REPO_URL.replace("https://", "")}</a>
         {" · "}data: <a className="hover:text-foreground underline" href="/api/cv">cv.json</a>
       </footer>
     </main>

@@ -20,7 +20,7 @@ ${toPlainText()}`;
 
 export async function POST(request: Request) {
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY)
-    return Response.json({ error: "ask is offline" }, { status: 503 });
+    return Response.json({ error: "ask is offline right now" }, { status: 503 });
 
   let question: unknown;
   try {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     return Response.json({ error: `question must be 1-${MAX_QUESTION} characters` }, { status: 400 });
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  if (!allow(ip)) return Response.json({ error: "daily quota reached" }, { status: 429 });
+  if (!allow(ip)) return Response.json({ error: "daily quota reached, try again tomorrow" }, { status: 429 });
 
   const result = streamText({ model: google(MODEL), system: SYSTEM, prompt: question.trim() });
   return result.toTextStreamResponse();

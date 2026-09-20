@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const streamText = vi.fn((opts: { system: string; prompt: string }) => void opts || ({
-  toTextStreamResponse: () => new Response("I built ATS integrations.", { headers: { "content-type": "text/plain" } }),
-}));
+const streamText = vi.fn((opts: { system: string; prompt: string }) => {
+  void opts;
+  return { toTextStreamResponse: () => new Response("I built ATS integrations.", { headers: { "content-type": "text/plain" } }) };
+});
 vi.mock("ai", () => ({ streamText }));
 vi.mock("@ai-sdk/google", () => ({ google: (id: string) => ({ id }) }));
 

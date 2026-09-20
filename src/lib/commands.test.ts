@@ -43,6 +43,9 @@ describe("execute", () => {
     expect(text("education")).toContain("UTN FRC");
     const c = text("contact");
     expect(c).toContain("zagoagus@gmail.com");
+    expect(c).toContain("Córdoba");
+    expect(c).toContain("EU work authorisation");
+    expect(text("about")).toContain("github.com/agustinzago/portfolio");
     expect(c).not.toContain("+54");
   });
 
@@ -55,7 +58,7 @@ describe("execute", () => {
   });
 
   it("resume, page, clear are actions", () => {
-    expect(execute("resume")).toEqual({ type: "open", href: "/AgustinZago_CV.pdf" });
+    expect(execute("resume")).toEqual({ type: "download", href: "/AgustinZago_CV.pdf" });
     expect(execute("page")).toEqual({ type: "navigate", href: "/cv" });
     expect(execute("clear")).toEqual({ type: "clear" });
   });
@@ -65,6 +68,8 @@ describe("execute", () => {
     expect(text("rm -rf /")).toMatch(/nice try/i);
     expect(text("vim")).toMatch(/exit/i);
     expect(text("ls")).toContain("experience");
+    expect(execute("cat clear").type).toBe("text");
+    expect(text("cat skills")).toContain("Backend:");
     expect(text("foo")).toBe("command not found: foo. Try `help`.");
   });
 

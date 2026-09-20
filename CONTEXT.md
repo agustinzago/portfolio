@@ -26,7 +26,7 @@ Three doors, one dataset:
 `help` `about` `experience [company]` `skills` `education` `contact` `ask <question>` `resume` (PDF download) `page` (switch to page view) `clear`
 
 Hidden until data exists: `projects` (shown only when `cv.json.projects` is non-empty).
-Easter eggs: `sudo` `rm -rf /` `exit` `ls` `cat` `vim`.
+Easter eggs: `sudo` `rm -rf /` `exit` `ls` `cat` `vim` `whoami`. Shell niceties: tab completion, arrow history, Ctrl+L, Ctrl+C.
 Later, nearly free: `man` (résumé as man page).
 
 ## API
@@ -34,6 +34,8 @@ Later, nearly free: `man` (résumé as man page).
 - `GET /api/cv` — whole cv.json
 - `GET /api/experience`
 - `GET /api/skills`
+- `GET /api/education` — added so every page-view card is a real endpoint
+- `GET /api/cv.txt` — plain text; what the curl trick rewrites to
 - `POST /api/ask` — LLM, streaming
 
 ## Decisions (ADR-lite)
@@ -56,6 +58,8 @@ Later, nearly free: `man` (résumé as man page).
 | 14 | Contact: email, LinkedIn, GitHub, location + "open to remote/relocation, EU work auth". No phone | Phone = spam; EU line = hiring signal | — |
 | 15 | Public GitHub repo, linked from `about` and page footer | Code is part of the portfolio | Private |
 | 16 | Existing PDF copied to `public/` for `resume`; regenerate from cv.json later | Ship now | Generate PDF now |
+| 17 | Mobile is a hard redirect to `/cv` (phone can never reach terminal); iPad counts as desktop | Simplest; terminal on phone has no good mode | UA-based default with opt-in |
+| 18 | Endpoint cards always open; "expand" means raw-JSON toggle | Less clicking on a phone | Collapsible cards |
 
 ## Open / later
 

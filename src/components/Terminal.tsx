@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { complete, execute } from "@/lib/commands";
+import { complete, execute, helpLines } from "@/lib/commands";
 import { askStream } from "@/lib/ask-client";
 
 const PROMPT = "agustin@zago:~$";
@@ -12,18 +12,19 @@ const BOOT = [
   "mounting /api .............. ok",
   "starting shell",
 ];
-const WELCOME = ["", `Hi, I'm Agustín. Backend & platform engineer. Type \`help\`, or \`page\` for the boring version.`, ""];
+const WELCOME = ["", "Hi, I'm Agustín. Backend & platform engineer. Ask me things:", "", ...helpLines(), "", "Prefer a page? Type `page` or use the link top right.", ""];
 
 type Entry = { input?: string; lines: string[] };
 
-const URL_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+)/g;
+const URL_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+)/;
 
 function Line({ text }: { text: string }) {
+  // split with a capturing group: odd indexes are the matches
   const parts = text.split(URL_RE);
   return (
     <div className="whitespace-pre-wrap break-words min-h-[1.5em]">
       {parts.map((p, i) =>
-        URL_RE.test(p) ? (
+        i % 2 === 1 ? (
           <a key={i} href={p.includes("@") ? `mailto:${p}` : p} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">
             {p}
           </a>
@@ -85,28 +86,30 @@ export default function Terminal() {
   async function run(line: string) {
     history.current.push(line);
     histIdx.current = history.current.length;
-    const r = execute(line);
-    switch (r.type) {
+    const result = execute(line);
+    switch (result.type) {
       case "clear":
         return setEntries([]);
       case "navigate":
         push({ input: line, lines: [] });
-        return router.push(r.href);
-      case "open":
-        push({ input: line, lines: [`opening ${r.href}`] });
-        return window.open(r.href, "_blank");
+        return router.push(result.href);
+      case "download": {
+        push({ input: line, lines: [`downloading ${result.href}`] });
+        const a = Object.assign(document.createElement("a"), { href: result.href, download: "" });
+        return a.click();
+      }
       case "ask": {
         push({ input: line, lines: [] });
         setBusy(true);
         try {
-          for await (const chunk of askStream(r.question)) appendToLast(chunk);
+          for await (const chunk of askStream(result.question)) appendToLast(chunk);
         } finally {
           setBusy(false);
         }
         return;
       }
       case "text":
-        return push({ input: line, lines: r.lines });
+        return push({ input: line, lines: result.lines });
     }
   }
 
@@ -118,9 +121,9 @@ export default function Terminal() {
       else push({ input: "", lines: [] });
     } else if (e.key === "Tab") {
       e.preventDefault();
-      const c = complete(input);
-      if (c.length === 1) setInput(c[0] + " ");
-      else if (c.length > 1) push({ input, lines: [c.join("   ")] });
+      const candidates = complete(input);
+      if (candidates.length === 1) setInput(candidates[0] + " ");
+      else if (candidates.length > 1) push({ input, lines: [candidates.join("   ")] });
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (histIdx.current > 0) setInput(history.current[--histIdx.current]);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cv } from "@/lib/cv";
 
 type Props = {
   method?: "GET" | "POST";
@@ -10,12 +11,11 @@ type Props = {
   children: React.ReactNode;
 };
 
-const ORIGIN = "https://agustinzago.com";
 
 export default function EndpointCard({ method = "GET", path, summary, raw, children }: Props) {
   const [showRaw, setShowRaw] = useState(false);
   const [copied, setCopied] = useState(false);
-  const curl = `curl ${ORIGIN}${path}`;
+  const curl = `curl ${cv.contact.website}${path}`;
 
   async function copy() {
     await navigator.clipboard.writeText(curl);

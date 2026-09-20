@@ -9,6 +9,7 @@ export function createRateLimit(limit: number) {
   const counts = new Map<string, { day: string; n: number }>();
   return (key: string, now = new Date()): boolean => {
     const day = now.toISOString().slice(0, 10);
+    for (const [k, v] of counts) if (v.day !== day) counts.delete(k);
     const cur = counts.get(key);
     const n = cur?.day === day ? cur.n + 1 : 1;
     counts.set(key, { day, n });

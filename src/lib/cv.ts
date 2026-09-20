@@ -6,6 +6,12 @@ export type CV = typeof data;
 
 export const cv: CV = data;
 
+export type Project = { name: string; description: string; url?: string };
+export const projects = cv.projects as Project[];
+
+export const RESUME_PDF = "/AgustinZago_CV.pdf";
+export const REPO_URL = `${cv.contact.github}/portfolio`;
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /** "2026-03" -> "Mar 2026" */
@@ -31,6 +37,20 @@ export function skillLines(): string[] {
   return (Object.keys(cv.skills) as (keyof Skills)[]).map(
     (k) => `${SKILL_LABELS[k]}: ${cv.skills[k].join(", ")}`,
   );
+}
+
+/** What /api/experience returns: roles with a human period. */
+export function experienceView() {
+  return cv.experience.map((e) => ({ ...e, period: formatPeriod(e.start, e.end) }));
+}
+
+/** What /api/education returns. */
+export function educationView() {
+  return { education: cv.education, languages: cv.languages };
+}
+
+export function languageLine(): string {
+  return cv.languages.map((l) => `${l.name} (${l.level})`).join(", ");
 }
 
 /** Plain-text CV, what `curl agustinzago.com` returns. */
@@ -60,7 +80,7 @@ export function toPlainText(): string {
   }
 
   h("Languages");
-  out.push(cv.languages.map((l) => `${l.name} (${l.level})`).join(", "));
+  out.push(languageLine());
 
   return out.join("\n") + "\n";
 }

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { cv } from "@/lib/cv";
 
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Agustín Zago — Backend & Platform Engineer",
-  description: "Backend & platform engineer. Integrations, distributed pipelines, AI features. Node.js, TypeScript, AWS. Try `curl agustinzago.com`.",
-  metadataBase: new URL("https://agustinzago.com"),
+  title: `${cv.name} — ${cv.title}`,
+  description: `${cv.summary.split(". ")[0]}. Try \`curl agustinzago.com\`.`,
+  metadataBase: new URL(cv.contact.website),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
