@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const streamText = vi.fn(() => ({
+const streamText = vi.fn((opts: { system: string; prompt: string }) => void opts || ({
   toTextStreamResponse: () => new Response("I built ATS integrations.", { headers: { "content-type": "text/plain" } }),
 }));
 vi.mock("ai", () => ({ streamText }));
@@ -31,7 +31,7 @@ describe("POST /api/ask", () => {
     const res = await post({ question: "what did you build at Brainner?" }, "2.2.2.2");
     expect(res.status).toBe(200);
     expect(await res.text()).toContain("ATS integrations");
-    const args = streamText.mock.calls[0][0] as unknown as { system: string; prompt: string };
+    const args = streamText.mock.calls[0][0];
     expect(args.system).toContain("You are Agustín Zago");
     expect(args.system).toContain("Lead Platform Engineer, Brainner");
     expect(args.prompt).toBe("what did you build at Brainner?");
