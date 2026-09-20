@@ -7,13 +7,17 @@ export async function* askStream(question: string, signal?: AbortSignal): AsyncG
     signal,
   });
   if (!res.ok || !res.body) {
-    yield res.status === 429 ? "quota hit, try again tomorrow." : `ask failed (${res.status}).`;
+    const msg = { 429: "quota hit, try again tomorrow.", 503: "ask is offline right now." }[res.status];
+    yield msg ?? `ask failed (${res.status}).`;
     return;
   }
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+  let got = false;
   for (;;) {
     const { value, done } = await reader.read();
-    if (done) return;
+    if (done) break;
+    got = true;
     yield value;
   }
+  if (!got) yield "no answer came back. try again in a moment.";
 }
