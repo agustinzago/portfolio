@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { GET as getCv } from "./cv/route";
 import { GET as getExperience } from "./experience/route";
 import { GET as getSkills } from "./skills/route";
+import { GET as getEducation } from "./education/route";
 import { GET as getPlain } from "./cv.txt/route";
 import { proxy } from "@/proxy";
 
@@ -22,6 +23,12 @@ describe("API", () => {
   it("GET /api/skills returns grouped skills", async () => {
     const body = await getSkills().json();
     expect(body.backend).toContain("Redis");
+  });
+
+  it("GET /api/education returns education and languages", async () => {
+    const body = await getEducation().json();
+    expect(body.education[0].institution).toContain("UTN");
+    expect(body.languages).toHaveLength(3);
   });
 
   it("GET /api/cv.txt returns plain text", async () => {
