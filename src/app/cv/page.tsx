@@ -3,7 +3,12 @@ import { cv, educationView, experienceView, formatPeriod, languageLine, REPO_URL
 import EndpointCard from "@/components/EndpointCard";
 import AskCard from "@/components/AskCard";
 
-export const metadata = { title: `${cv.name} — CV` };
+export const metadata = {
+  title: "CV",
+  description: `CV of ${cv.name}: ${cv.experience.map((e) => `${e.role} at ${e.company}`).slice(0, 3).join(", ")}. ${cv.location}, open to remote and relocation.`,
+  alternates: { canonical: "/cv" },
+  openGraph: { url: "/cv" },
+};
 
 export default function CvPage() {
   const experience = experienceView();
