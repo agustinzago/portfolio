@@ -6,6 +6,7 @@ import { complete, execute, helpLines } from "@/lib/commands";
 import { askStream } from "@/lib/ask-client";
 import { BANNER } from "@/lib/banner";
 import { cv } from "@/lib/cv";
+import Thinking from "./Thinking";
 
 const PROMPT = "agustin@zago:~$";
 const BOOT = [
@@ -44,6 +45,7 @@ export default function Terminal() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [thinking, setThinking] = useState(false);
   const [booted, setBooted] = useState(false);
   const history = useRef<string[]>([]);
   const histIdx = useRef(-1);
@@ -105,10 +107,15 @@ export default function Terminal() {
       case "ask": {
         push({ input: line, lines: [] });
         setBusy(true);
+        setThinking(true);
         try {
-          for await (const chunk of askStream(result.question)) appendToLast(chunk);
+          for await (const chunk of askStream(result.question)) {
+            setThinking(false);
+            appendToLast(chunk);
+          }
         } finally {
           setBusy(false);
+          setThinking(false);
         }
         return;
       }
@@ -148,7 +155,7 @@ export default function Terminal() {
   }
 
   return (
-    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => inputRef.current?.focus()}>
+    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => !window.getSelection()?.toString() && inputRef.current?.focus()}>
       <div>
         {entries.map((e, i) => (
           <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-hidden leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
@@ -162,6 +169,7 @@ export default function Terminal() {
             ))}
           </div>
         ))}
+        {thinking && <Thinking />}
         {booted && (
           <div className="flex">
             <span className="text-prompt shrink-0">{PROMPT}&nbsp;</span>

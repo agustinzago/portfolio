@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { askStream } from "@/lib/ask-client";
+import Thinking from "./Thinking";
 
 export default function AskCard() {
   const [q, setQ] = useState("");
@@ -34,6 +35,7 @@ export default function AskCard() {
           {busy ? "…" : "send"}
         </button>
       </form>
+      {busy && !answer && <Thinking />}
       {answer && <pre className="whitespace-pre-wrap font-mono text-sm leading-6">{answer}</pre>}
     </div>
   );
