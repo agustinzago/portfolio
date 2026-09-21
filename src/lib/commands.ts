@@ -53,7 +53,7 @@ const commands: Record<string, Command> = {
     run: (arg) => (arg ? { type: "ask", question: arg } : text("usage: ask <question>")),
   },
   resume: { desc: "download the PDF", run: () => ({ type: "download", href: RESUME_PDF }) },
-  page: { desc: "view as a page instead", run: () => ({ type: "navigate", href: "/cv" }) },
+  page: { desc: "the API docs, rendered", run: () => ({ type: "navigate", href: "/cv" }) },
   clear: { desc: "clear the screen", run: () => ({ type: "clear" }) },
 
   // easter eggs

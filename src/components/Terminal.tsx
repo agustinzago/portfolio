@@ -14,7 +14,7 @@ const BOOT = [
   "mounting /api .............. ok",
   "starting shell",
 ];
-const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availability}`, "", ...helpLines(), "", "Prefer a page? Type `page` or use the link top right.", ""];
+const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availability}`, "", ...helpLines(), "", "Prefer to read? Type `page` for the API docs, or use the link top right.", ""];
 
 type Entry = { input?: string; lines: string[]; banner?: boolean };
 
@@ -151,7 +151,7 @@ export default function Terminal() {
     <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => inputRef.current?.focus()}>
       <div>
         {entries.map((e, i) => (
-          <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-x-auto leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
+          <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-hidden leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
             {e.input !== undefined && (
               <div>
                 <span className="text-prompt">{PROMPT}</span> {e.input}

@@ -10,7 +10,7 @@ export default function Home() {
           <span className="size-3 rounded-full bg-[#febc2e]" />
           <span className="size-3 rounded-full bg-[#28c840]" />
           <span className="absolute inset-x-0 text-center font-mono pointer-events-none">agustin@zago: ~</span>
-          <Link href="/cv" className="ml-auto relative z-10 hover:text-foreground">view as page →</Link>
+          <Link href="/cv" className="ml-auto relative z-10 hover:text-foreground">view api docs →</Link>
         </div>
         <Terminal />
       </div>
