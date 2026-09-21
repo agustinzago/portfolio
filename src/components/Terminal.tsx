@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { complete, execute, helpLines } from "@/lib/commands";
 import { askStream } from "@/lib/ask-client";
+import { BANNER } from "@/lib/banner";
+import { cv } from "@/lib/cv";
 
 const PROMPT = "agustin@zago:~$";
 const BOOT = [
@@ -12,9 +14,9 @@ const BOOT = [
   "mounting /api .............. ok",
   "starting shell",
 ];
-const WELCOME = ["", "Hi, I'm Agustín. Backend & platform engineer. Ask me things:", "", ...helpLines(), "", "Prefer a page? Type `page` or use the link top right.", ""];
+const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availability}`, "", ...helpLines(), "", "Prefer a page? Type `page` or use the link top right.", ""];
 
-type Entry = { input?: string; lines: string[] };
+type Entry = { input?: string; lines: string[]; banner?: boolean };
 
 const URL_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+)/;
 
@@ -39,6 +41,7 @@ function Line({ text }: { text: string }) {
 export default function Terminal() {
   const router = useRouter();
   const [entries, setEntries] = useState<Entry[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [booted, setBooted] = useState(false);
@@ -55,7 +58,7 @@ export default function Terminal() {
       if (done) return;
       done = true;
       clearInterval(t);
-      setEntries([{ lines: [...BOOT, ...WELCOME] }]);
+      setEntries([{ lines: BOOT }, { lines: BANNER, banner: true }, { lines: WELCOME }]);
       setBooted(true);
     };
     const t = setInterval(() => {
@@ -71,7 +74,8 @@ export default function Terminal() {
   }, []);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [entries, input]);
 
   const push = (e: Entry) => setEntries((prev) => [...prev, e]);
@@ -144,10 +148,10 @@ export default function Terminal() {
   }
 
   return (
-    <div className="min-h-dvh p-4 sm:p-6 font-mono text-[15px] leading-6 cursor-text" onClick={() => inputRef.current?.focus()}>
-      <div className="mx-auto max-w-3xl">
+    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => inputRef.current?.focus()}>
+      <div>
         {entries.map((e, i) => (
-          <div key={i}>
+          <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-x-auto leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
             {e.input !== undefined && (
               <div>
                 <span className="text-prompt">{PROMPT}</span> {e.input}

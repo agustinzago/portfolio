@@ -6,7 +6,7 @@
   --dim: #6e7681;
   --prompt: #7ee787;
   --accent: #79c0ff;
-  --panel: #12151a;
+  --panel: #0f1216;
   --border: #22272e;
 }
 
@@ -22,6 +22,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  background: var(--background);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -30,4 +34,9 @@ body {
 
 ::selection {
   background: #264f78;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
