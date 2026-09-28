@@ -1,9 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const streamText = vi.fn((opts: { system: string; prompt: string }) => {
-  void opts;
-  return { toTextStreamResponse: () => new Response("I built ATS integrations.", { headers: { "content-type": "text/plain" } }) };
-});
+const overloaded = new Set<string>();
+const streamText = vi.fn((opts: { model: { id: string }; system: string; prompt: string }) => ({
+  textStream: (async function* () {
+    if (overloaded.has(opts.model.id)) throw new Error("503 model overloaded");
+    yield "I built ";
+    yield "ATS integrations.";
+  })(),
+}));
 vi.mock("ai", () => ({ streamText }));
 vi.mock("@ai-sdk/google", () => ({ google: (id: string) => ({ id }) }));
 
@@ -18,7 +22,10 @@ const post = (body: unknown, ip = "1.1.1.1") =>
   }));
 
 describe("POST /api/ask", () => {
-  beforeEach(() => streamText.mockClear());
+  beforeEach(() => {
+    streamText.mockClear();
+    overloaded.clear();
+  });
 
   it("400 on missing, empty or oversized question", async () => {
     expect((await post({})).status).toBe(400);
@@ -36,6 +43,21 @@ describe("POST /api/ask", () => {
     expect(args.system).toContain("You are Agustín Zago");
     expect(args.system).toContain("Lead Platform Engineer, Brainner");
     expect(args.prompt).toBe("what did you build at Brainner?");
+  });
+
+  it("falls back to the next model when the first is overloaded", async () => {
+    overloaded.add("gemini-flash-lite-latest");
+    const res = await post({ question: "hi" }, "4.4.4.4");
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe("I built ATS integrations.");
+    expect(streamText.mock.calls.map((c) => c[0].model.id)).toEqual(["gemini-flash-lite-latest", "gemini-flash-latest"]);
+  });
+
+  it("503 with a readable error when every model is overloaded", async () => {
+    overloaded.add("gemini-flash-lite-latest").add("gemini-flash-latest");
+    const res = await post({ question: "hi" }, "5.5.5.5");
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toMatch(/busy/);
   });
 
   it("503 when no API key is configured", async () => {

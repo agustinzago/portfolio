@@ -3,7 +3,8 @@ import { streamText } from "ai";
 import { cv, toPlainText } from "@/lib/cv";
 import { createRateLimit } from "@/lib/rate-limit";
 
-const MODEL = "gemini-flash-lite-latest";
+// Tried in order: Google 503s ("overloaded") are per model, so a sibling usually answers.
+const MODELS = ["gemini-flash-lite-latest", "gemini-flash-latest"];
 const MAX_QUESTION = 500;
 const allow = createRateLimit(20);
 
@@ -34,6 +35,28 @@ export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
   if (!allow(ip)) return Response.json({ error: "daily quota reached, try again tomorrow" }, { status: 429 });
 
-  const result = streamText({ model: google(MODEL), system: SYSTEM, prompt: question.trim() });
-  return result.toTextStreamResponse();
+  for (const model of MODELS) {
+    const chunks = streamText({ model: google(model), system: SYSTEM, prompt: question.trim(), maxRetries: 1 })
+      .textStream[Symbol.asyncIterator]();
+    // The first chunk proves the model answered; failures before it fall through to the next model.
+    let first: IteratorResult<string>;
+    try {
+      first = await chunks.next();
+    } catch (error) {
+      console.error(`ask: ${model} failed`, error);
+      continue;
+    }
+    return new Response(
+      new ReadableStream<string>({
+        start: (c) => void (first.done ? c.close() : c.enqueue(first.value)),
+        async pull(c) {
+          const { value, done } = await chunks.next();
+          if (done) c.close();
+          else c.enqueue(value);
+        },
+      }).pipeThrough(new TextEncoderStream()),
+      { headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+  return Response.json({ error: "ask is busy right now, try again in a moment" }, { status: 503 });
 }
