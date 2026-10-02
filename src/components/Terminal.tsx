@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { complete, execute, helpLines } from "@/lib/commands";
+import { complete, execute, helpLines, isPublicCommand } from "@/lib/commands";
 import { askStream } from "@/lib/ask-client";
 import { BANNER } from "@/lib/banner";
 import { cv } from "@/lib/cv";
@@ -19,21 +19,53 @@ const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availabili
 
 type Entry = { input?: string; lines: string[]; banner?: boolean };
 
-const URL_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+)/;
+// links, plus `backticked` commands that run when tapped
+const TOKEN_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+|`[^`<]+`)/;
 
-function Line({ text }: { text: string }) {
+type Run = ((line: string) => void) | undefined;
+
+/** A command as a button, so the terminal works by tapping too. `run` is undefined while busy. */
+function Cmd({ line, run }: { line: string; run: Run }) {
+  return (
+    <button
+      type="button"
+      disabled={!run}
+      onClick={(e) => {
+        e.stopPropagation(); // don't focus the input: on a tablet that pops the keyboard
+        run?.(line);
+      }}
+      className="text-accent underline decoration-dotted underline-offset-4 hover:decoration-solid disabled:no-underline disabled:cursor-default"
+    >
+      {line}
+    </button>
+  );
+}
+
+function rich(text: string, run: Run) {
   // split with a capturing group: odd indexes are the matches
-  const parts = text.split(URL_RE);
+  return text.split(TOKEN_RE).map((p, i) => {
+    if (i % 2 === 0) return p;
+    if (p.startsWith("`")) return <span key={i}>`<Cmd line={p.slice(1, -1)} run={run} />`</span>;
+    return (
+      <a key={i} href={p.includes("@") ? `mailto:${p}` : p} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">
+        {p}
+      </a>
+    );
+  });
+}
+
+function Line({ text, run }: { text: string; run: Run }) {
+  // help rows ("skills       what I work with") lead with a tappable name
+  const help = text.match(/^([a-z]+)( {2,}.*)$/);
   return (
     <div className="whitespace-pre-wrap break-words min-h-[1.5em]">
-      {parts.map((p, i) =>
-        i % 2 === 1 ? (
-          <a key={i} href={p.includes("@") ? `mailto:${p}` : p} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">
-            {p}
-          </a>
-        ) : (
-          p
-        ),
+      {help && isPublicCommand(help[1]) ? (
+        <>
+          <Cmd line={help[1]} run={run} />
+          {rich(help[2], run)}
+        </>
+      ) : (
+        rich(text, run)
       )}
     </div>
   );
@@ -124,6 +156,12 @@ export default function Terminal() {
     }
   }
 
+  function tap(line: string) {
+    void run(line);
+    // with a mouse, keep typing working after a click; with touch, no keyboard popping up
+    if (matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" && !busy) {
       const line = input;
@@ -165,7 +203,7 @@ export default function Terminal() {
               </div>
             )}
             {e.lines.map((l, j) => (
-              <Line key={j} text={l} />
+              <Line key={j} text={l} run={busy ? undefined : tap} />
             ))}
           </div>
         ))}

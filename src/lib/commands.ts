@@ -20,10 +20,10 @@ const commands: Record<string, Command> = {
   experience: {
     desc: "roles, or `experience <company>` for one",
     run: (arg) => {
-      if (!arg) return text(...cv.experience.map((e) => `${formatPeriod(e.start, e.end).padEnd(22)} ${e.role}, ${e.company}`), "", "experience <company> for details");
+      if (!arg) return text(...cv.experience.map((e) => `${formatPeriod(e.start, e.end).padEnd(22)} ${e.role}, ${e.company}`), "", `details: ${companies().map((c) => `\`experience ${c}\``).join("  ")}`);
       const q = arg.toLowerCase();
       const hits = cv.experience.filter((e) => e.company.toLowerCase().includes(q) || e.id.includes(q));
-      if (!hits.length) return text(`no role matching "${arg}". Try: ${companies().join(", ")}`);
+      if (!hits.length) return text(`no role matching "${arg}". Try: ${companies().map((c) => `\`experience ${c}\``).join("  ")}`);
       return text(...hits.flatMap((e) => [
         `${e.role}, ${e.company}`,
         `${formatPeriod(e.start, e.end)} · ${e.location}`,
@@ -75,6 +75,7 @@ const commands: Record<string, Command> = {
 
 const companies = () => [...new Set(cv.experience.map((e) => e.company.toLowerCase()))];
 const publicNames = () => Object.entries(commands).filter(([, c]) => !c.hidden).map(([n]) => n);
+export const isPublicCommand = (name: string) => Object.hasOwn(commands, name) && !commands[name].hidden;
 export const helpLines = () => publicNames().map((n) => `${n.padEnd(12)} ${commands[n].desc}`);
 
 export function execute(line: string): CommandResult {
