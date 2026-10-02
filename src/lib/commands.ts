@@ -20,10 +20,10 @@ const commands: Record<string, Command> = {
   experience: {
     desc: "roles, or `experience <company>` for one",
     run: (arg) => {
-      if (!arg) return text(...cv.experience.map((e) => `${formatPeriod(e.start, e.end).padEnd(22)} ${e.role}, ${e.company}`), "", `details: ${companies().map((c) => `\`experience ${c}\``).join("  ")}`);
+      if (!arg) return text(...cv.experience.map((e) => `${formatPeriod(e.start, e.end).padEnd(22)} ${e.role}, ${e.company}`), "", `details: ${companies().map((c) => `\`experience ${c}\``).join(" ")}`);
       const q = arg.toLowerCase();
       const hits = cv.experience.filter((e) => e.company.toLowerCase().includes(q) || e.id.includes(q));
-      if (!hits.length) return text(`no role matching "${arg}". Try: ${companies().map((c) => `\`experience ${c}\``).join("  ")}`);
+      if (!hits.length) return text(`no role matching "${arg}". Try: ${companies().map((c) => `\`experience ${c}\``).join(" ")}`);
       return text(...hits.flatMap((e) => [
         `${e.role}, ${e.company}`,
         `${formatPeriod(e.start, e.end)} · ${e.location}`,

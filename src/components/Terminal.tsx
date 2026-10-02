@@ -15,9 +15,12 @@ const BOOT = [
   "mounting /api .............. ok",
   "starting shell",
 ];
-const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availability}`, "", ...helpLines(), "", "Prefer to read? Type `page` for the API docs, or use the link top right.", ""];
+const WELCOME = [`${cv.name} · ${cv.title}`, `${cv.location} · ${cv.availability}`, "", ...helpLines(), ""];
+// phones: the link already sits in the title bar, and this costs two rows
+const PREFER_PAGE = ["Prefer to read? Type `page` for the API docs, or use the link top right.", ""];
+const BANNER_CLASS = "my-3 text-prompt whitespace-pre overflow-hidden leading-[1.05] max-sm:text-[10px] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0";
 
-type Entry = { input?: string; lines: string[]; banner?: boolean };
+type Entry = { input?: string; lines: string[]; className?: string };
 
 // links, plus `backticked` commands that run when tapped
 const TOKEN_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+|`[^`<]+`)/;
@@ -37,7 +40,7 @@ function Cmd({ line, run }: { line: string; run: Run }) {
         e.stopPropagation(); // don't focus the input: on a tablet that pops the keyboard
         run?.(line);
       }}
-      className="text-accent underline decoration-dotted underline-offset-4 hover:decoration-solid disabled:no-underline disabled:cursor-default"
+      className="indent-0 text-accent underline decoration-dotted underline-offset-4 hover:decoration-solid disabled:no-underline disabled:cursor-default"
     >
       {line}
     </button>
@@ -48,7 +51,7 @@ function rich(text: string, run: Run) {
   // split with a capturing group: odd indexes are the matches
   return text.split(TOKEN_RE).map((p, i) => {
     if (i % 2 === 0) return p;
-    if (p.startsWith("`")) return <span key={i}>`<Cmd line={p.slice(1, -1)} run={run} />`</span>;
+    if (p.startsWith("`")) return <span key={i} className="whitespace-nowrap">`<Cmd line={p.slice(1, -1)} run={run} />`</span>;
     return (
       <a key={i} href={p.includes("@") ? `mailto:${p}` : p} target="_blank" rel="noreferrer" className="text-accent underline underline-offset-2">
         {p}
@@ -60,8 +63,10 @@ function rich(text: string, run: Run) {
 function Line({ text, run }: { text: string; run: Run }) {
   // help rows ("skills       what I work with") lead with a tappable name
   const help = text.match(/^([a-z]+)( {2,}.*)$/);
+  // hanging indent: a wrapped column row ("about    who I am") or bullet ("  - ...") continues under its text, not at column 0
+  const indent = text.match(/^\S.*?\s{2,}(?=\S)|^ *- /)?.[0].length ?? 0;
   return (
-    <div className="whitespace-pre-wrap break-words min-h-[1.5em]">
+    <div className="whitespace-pre-wrap break-words min-h-[1.5em]" style={indent ? { paddingLeft: `${indent}ch`, textIndent: `-${indent}ch` } : undefined}>
       {help && isPublicCommand(help[1]) ? (
         <>
           <Cmd line={help[1]} run={run} />
@@ -95,7 +100,7 @@ export default function Terminal() {
       if (done) return;
       done = true;
       clearInterval(t);
-      setEntries([{ lines: BOOT }, { lines: BANNER, banner: true }, { lines: WELCOME }]);
+      setEntries([{ lines: BOOT }, { lines: BANNER, className: BANNER_CLASS }, { lines: WELCOME }, { lines: PREFER_PAGE, className: "max-sm:hidden" }]);
       setBooted(true);
     };
     const t = setInterval(() => {
@@ -114,9 +119,10 @@ export default function Terminal() {
     if (booted && finePointer()) inputRef.current?.focus();
   }, [booted]);
 
+  // follow the output, but not before the first command: on a phone the welcome is taller than the screen and its top would be cut off
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (el && (history.current.length || input)) el.scrollTop = el.scrollHeight;
   }, [entries, input]);
 
   const push = (e: Entry) => setEntries((prev) => [...prev, e]);
@@ -199,10 +205,10 @@ export default function Terminal() {
   }
 
   return (
-    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => finePointer() && !window.getSelection()?.toString() && inputRef.current?.focus()}>
+    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[13px] sm:text-[14px] leading-6 cursor-text" onClick={() => finePointer() && !window.getSelection()?.toString() && inputRef.current?.focus()}>
       <div>
         {entries.map((e, i) => (
-          <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-hidden leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
+          <div key={i} className={e.className}>
             {e.input !== undefined && (
               <div>
                 <span className="text-prompt">{PROMPT}</span> {e.input}
@@ -227,7 +233,7 @@ export default function Terminal() {
               autoComplete="off"
               autoCapitalize="off"
               aria-label="terminal input"
-              placeholder="tap a command, or type here"
+              placeholder="tap or type"
               // phones: 16px, below that iOS zooms in on focus; the placeholder hints that tapping works
               className="min-w-0 flex-1 bg-transparent outline-none caret-prompt placeholder:text-dim max-sm:text-base sm:placeholder:text-transparent"
             />
