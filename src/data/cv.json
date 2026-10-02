@@ -117,5 +117,18 @@
     { "name": "English", "level": "advanced, C1" },
     { "name": "Portuguese", "level": "conversational" }
   ],
-  "projects": []
+  "projects": [
+    {
+      "name": "Apedia",
+      "description": "Learn anything with a personal AI teacher: an interview about what you want to learn and why, then a short course written around you, lesson by lesson. Solo-built on Next.js, Postgres (Drizzle), the Claude API, Auth.js magic links and Polar payments, with per-course cost allowances and daily spend limits keeping AI costs below revenue.",
+      "url": "https://apedia.study",
+      "repo": "https://github.com/agustinzago/apedia"
+    },
+    {
+      "name": "This portfolio",
+      "description": "A fake terminal backed by a real API: one cv.json feeds the shell, a Swagger-style page view, JSON endpoints and a plain-text CV for curl. The ask command streams answers in character from Gemini, with a fallback model and rate limiting. Next.js on Vercel.",
+      "url": "https://agustinzago.com",
+      "repo": "https://github.com/agustinzago/portfolio"
+    }
+  ]
 }

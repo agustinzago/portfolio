@@ -4,6 +4,7 @@ import { GET as getCv } from "./cv/route";
 import { GET as getExperience } from "./experience/route";
 import { GET as getSkills } from "./skills/route";
 import { GET as getEducation } from "./education/route";
+import { GET as getProjects } from "./projects/route";
 import { GET as getPlain } from "./cv.txt/route";
 import { proxy } from "@/proxy";
 
@@ -29,6 +30,11 @@ describe("API", () => {
     const body = await getEducation().json();
     expect(body.education[0].institution).toContain("UTN");
     expect(body.languages).toHaveLength(3);
+  });
+
+  it("GET /api/projects returns projects with links", async () => {
+    const body = await getProjects().json();
+    expect(body[0].url).toBe("https://apedia.study");
   });
 
   it("GET /api/cv.txt returns plain text", async () => {

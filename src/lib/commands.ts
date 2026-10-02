@@ -46,7 +46,7 @@ const commands: Record<string, Command> = {
   projects: {
     desc: "side projects",
     hidden: projects.length === 0,
-    run: () => text(...projects.map((p) => `${p.name}: ${p.description}`)),
+    run: () => text(...projects.flatMap((p) => [[p.name, p.url, p.repo].filter(Boolean).join("  "), p.description, ""])),
   },
   ask: {
     desc: "ask me anything about my work (AI, answers as me)",

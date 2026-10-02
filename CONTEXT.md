@@ -35,6 +35,7 @@ Later, nearly free: `man` (résumé as man page).
 - `GET /api/experience`
 - `GET /api/skills`
 - `GET /api/education` — added so every page-view card is a real endpoint
+- `GET /api/projects` — page-view card, shown only when `projects` is non-empty
 - `GET /api/cv.txt` — plain text; what the curl trick rewrites to
 - `POST /api/ask` — LLM, streaming
 

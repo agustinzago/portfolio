@@ -13,7 +13,12 @@ describe("execute", () => {
     for (const c of ["about", "experience", "skills", "education", "contact", "ask", "resume", "page", "clear"])
       expect(out).toContain(c);
     expect(out).not.toContain("sudo");
-    expect(out).not.toContain("projects"); // hidden while cv.projects is empty
+  });
+
+  it("projects lists each project with its url", () => {
+    expect(text("help")).toContain("projects");
+    expect(text("projects")).toContain("https://apedia.study");
+    expect(text("projects")).toContain("github.com/agustinzago/apedia");
   });
 
   it("about prints name, title and summary", () => {

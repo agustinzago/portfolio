@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cv, educationView, experienceView, formatPeriod, languageLine, REPO_URL, RESUME_PDF, SKILL_LABELS, type Skills } from "@/lib/cv";
+import { cv, educationView, experienceView, formatPeriod, languageLine, projects, REPO_URL, RESUME_PDF, SKILL_LABELS, type Skills } from "@/lib/cv";
 import EndpointCard from "@/components/EndpointCard";
 import AskCard from "@/components/AskCard";
 
@@ -54,6 +54,25 @@ export default function CvPage() {
           ))}
         </ol>
       </EndpointCard>
+
+      {projects.length > 0 && (
+        <EndpointCard path="/api/projects" summary="things I built on my own" raw={projects}>
+          <ul className="space-y-4">
+            {projects.map((p) => (
+              <li key={p.name}>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+                  <h2 className="font-semibold">{p.name}</h2>
+                  <span className="flex gap-x-3 text-xs">
+                    {p.url && <a className="text-accent hover:underline" href={p.url} target="_blank" rel="noreferrer">{p.url.replace("https://", "")}</a>}
+                    {p.repo && <a className="text-accent hover:underline" href={p.repo} target="_blank" rel="noreferrer">source</a>}
+                  </span>
+                </div>
+                <p className="mt-1">{p.description}</p>
+              </li>
+            ))}
+          </ul>
+        </EndpointCard>
+      )}
 
       <EndpointCard path="/api/skills" summary="what I work with" raw={cv.skills}>
         <dl className="grid gap-y-2 sm:grid-cols-[10rem_1fr]">

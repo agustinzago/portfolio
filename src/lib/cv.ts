@@ -6,7 +6,7 @@ export type CV = typeof data;
 
 export const cv: CV = data;
 
-export type Project = { name: string; description: string; url?: string };
+export type Project = { name: string; description: string; url?: string; repo?: string };
 export const projects = cv.projects as Project[];
 
 export const RESUME_PDF = "/AgustinZago_CV.pdf";
@@ -69,6 +69,11 @@ export function toPlainText(): string {
     out.push("", `${e.role}, ${e.company}`, `${formatPeriod(e.start, e.end)} · ${e.location}`);
     if (e.tagline) out.push(e.tagline);
     for (const b of e.highlights) out.push(`- ${b}`);
+  }
+
+  if (projects.length) {
+    h("Projects");
+    for (const p of projects) out.push("", [p.name, p.url, p.repo].filter(Boolean).join(" · "), p.description);
   }
 
   h("Skills");
