@@ -64,13 +64,13 @@ describe("curl trick", () => {
   });
 });
 
-describe("mobile default", () => {
-  it("redirects phones from / to /cv", () => {
+describe("phones", () => {
+  it("get the terminal at /, no redirect", () => {
     const req = new NextRequest("https://agustinzago.com/", {
       headers: { "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148 Safari", accept: "text/html" },
     });
     const res = proxy(req);
-    expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("https://agustinzago.com/cv");
+    expect(res.headers.get("location")).toBeNull();
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
   });
 });

@@ -2,8 +2,8 @@
 
 Portfolio with three doors and one dataset (`src/data/cv.json`):
 
-- **Terminal** (desktop): `help`, `experience brainner`, `ask what did you build?`
-- **Page** (`/cv`, phones): the API rendered as endpoint cards
+- **Terminal** (everywhere; commands are tappable on phones): `help`, `experience brainner`, `ask what did you build?`
+- **Page** (`/cv`, opt-in via `page` or "view api docs"): the API rendered as endpoint cards
 - **API**: `/api/cv`, `/api/experience`, `/api/skills`, `/api/education`, `/api/projects`, `POST /api/ask`
 - **curl trick**: `curl agustinzago.com` returns the plain-text CV
 

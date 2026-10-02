@@ -25,7 +25,7 @@ export default function CvPage() {
           <a className="text-accent hover:underline" href={cv.contact.linkedin} target="_blank" rel="noreferrer">linkedin</a>
           <a className="text-accent hover:underline" href={cv.contact.github} target="_blank" rel="noreferrer">github</a>
           <a className="text-accent hover:underline" href={RESUME_PDF} download>pdf</a>
-          <Link className="text-prompt hover:underline max-sm:hidden" href="/">open terminal →</Link>
+          <Link className="text-prompt hover:underline" href="/">open terminal →</Link>
         </p>
       </header>
 

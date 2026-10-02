@@ -8,8 +8,8 @@ Personal portfolio for Agustín Zago (backend & platform engineer). Live at **ag
 
 Three doors, one dataset:
 
-1. **Terminal** (desktop default): fake shell, fixed command list.
-2. **Page view** (mobile default, `page` command on desktop): Swagger-style API-docs page. Each section is an endpoint card (`GET /api/experience`) that expands into readable content, with a raw-JSON toggle and a working copy-curl button.
+1. **Terminal** (default everywhere, phones too): fake shell, fixed command list. Every command it prints is tappable.
+2. **Page view** (opt-in: `page` command or the "view api docs" link): Swagger-style API-docs page. Each section is an endpoint card (`GET /api/experience`) that expands into readable content, with a raw-JSON toggle and a working copy-curl button.
 3. **API**: real JSON endpoints, plus the **curl trick**: `curl agustinzago.com` (no browser) returns plain-text CV.
 
 ## Vocabulary
@@ -52,14 +52,14 @@ Later, nearly free: `man` (résumé as man page).
 | 7 | Fake shell, fixed commands | Ship. Virtual FS is a rabbit hole | Semi-real FS, WASM shell |
 | 8 | Domain `agustinzago.com` | Already on Vercel DNS, nothing served | `.com.ar` (dead) |
 | 9 | Modern dark terminal look (Warp/Ghostty), short skippable boot (<1s), prompt `agustin@zago:~$` | Readable; CRT is cliché | Retro CRT, light theme |
-| 10 | Mobile → page view; desktop → terminal | Terminal on phone is painful | Terminal everywhere with command chips |
+| 10 | Terminal everywhere; page view is opt-in. Phones work by tapping commands (2026-10-02, reverses "mobile → page view") | Tappable commands make the terminal usable without a keyboard | Mobile → page view |
 | 11 | Page view = API-docs style | Reuses API, phone-safe, recruiter-readable | man page (bonus command later), git-log graph, incident dashboard |
 | 12 | `ask` rate limit: in-memory per instance; provider quota is the hard ceiling | Lazy; upgrade to Upstash if abused | Upstash Redis, Vercel Firewall |
 | 13 | No `projects` section until 2+ exist; schema keeps `projects: []` | Empty section worse than none | — |
 | 14 | Contact: email, LinkedIn, GitHub, location + "open to remote/relocation, EU work auth". No phone | Phone = spam; EU line = hiring signal | — |
 | 15 | Public GitHub repo, linked from `about` and page footer | Code is part of the portfolio | Private |
 | 16 | Existing PDF copied to `public/` for `resume`; regenerate from cv.json later | Ship now | Generate PDF now |
-| 17 | Mobile is a hard redirect to `/cv` (phone can never reach terminal); iPad counts as desktop | Simplest; terminal on phone has no good mode | UA-based default with opt-in |
+| 17 | No phone redirect. On touch the prompt never auto-focuses, so the keyboard only opens when the prompt is tapped | Tapping commands is the phone mode | Hard redirect to `/cv` (until 2026-10-02) |
 | 18 | Endpoint cards always open; "expand" means raw-JSON toggle | Less clicking on a phone | Collapsible cards |
 
 ## Open / later

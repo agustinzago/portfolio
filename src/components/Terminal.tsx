@@ -22,6 +22,9 @@ type Entry = { input?: string; lines: string[]; banner?: boolean };
 // links, plus `backticked` commands that run when tapped
 const TOKEN_RE = /(https?:\/\/[^\s]+|[\w.+-]+@[\w-]+\.[\w.]+|`[^`<]+`)/;
 
+// mouse or trackpad; on touch, focusing the input pops the on-screen keyboard
+const finePointer = () => matchMedia("(pointer: fine)").matches;
+
 type Run = ((line: string) => void) | undefined;
 
 /** A command as a button, so the terminal works by tapping too. `run` is undefined while busy. */
@@ -108,6 +111,10 @@ export default function Terminal() {
   }, []);
 
   useEffect(() => {
+    if (booted && finePointer()) inputRef.current?.focus();
+  }, [booted]);
+
+  useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [entries, input]);
@@ -158,8 +165,7 @@ export default function Terminal() {
 
   function tap(line: string) {
     void run(line);
-    // with a mouse, keep typing working after a click; with touch, no keyboard popping up
-    if (matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
+    if (finePointer()) inputRef.current?.focus(); // keep typing working after a click
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -193,7 +199,7 @@ export default function Terminal() {
   }
 
   return (
-    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => !window.getSelection()?.toString() && inputRef.current?.focus()}>
+    <div ref={scrollRef} className="h-full overflow-y-auto p-4 sm:p-5 font-mono text-[14px] leading-6 cursor-text" onClick={() => finePointer() && !window.getSelection()?.toString() && inputRef.current?.focus()}>
       <div>
         {entries.map((e, i) => (
           <div key={i} className={e.banner ? "my-3 text-prompt whitespace-pre overflow-hidden leading-[1.05] [text-shadow:0_0_14px_rgba(126,231,135,.35)] *:min-h-0" : undefined}>
@@ -213,7 +219,6 @@ export default function Terminal() {
             <span className="text-prompt shrink-0">{PROMPT}&nbsp;</span>
             <input
               ref={inputRef}
-              autoFocus
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
@@ -222,7 +227,9 @@ export default function Terminal() {
               autoComplete="off"
               autoCapitalize="off"
               aria-label="terminal input"
-              className="flex-1 bg-transparent outline-none caret-prompt"
+              placeholder="tap a command, or type here"
+              // phones: 16px, below that iOS zooms in on focus; the placeholder hints that tapping works
+              className="min-w-0 flex-1 bg-transparent outline-none caret-prompt placeholder:text-dim max-sm:text-base sm:placeholder:text-transparent"
             />
           </div>
         )}
